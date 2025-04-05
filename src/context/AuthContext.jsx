@@ -16,19 +16,45 @@ export const AuthProvider = ({ children }) => {
     fetchUser();
   }, []);
 
+  // const login = (name, token, role, email) => {
+  //   setBtnLoading(true);
+  //   try {
+  //     const tokenFromCookies = Cookies.get('token'); // Get token from cookies
+  //     console.log("Logging in:", name, "Role:", role, "Email:", email); // Debugging
+
+  //     const userData = { username: name, role, email };
+
+  //     // If token exists, store it in localStorage
+  //     if (!tokenFromCookies) {
+  //       console.warn("No token found in cookies. Ensure cookies are set properly.");
+  //       // toast.error("No token received from server");
+  //     }
+
+  //     localStorage.setItem("loggedInUser", JSON.stringify({ user: userData }));
+  //     setUser(userData);
+  //     setIsAuth(true);
+  //     toast.success("Logged in successfully");
+
+  //     navigate(role === "admin" ? "/adminDashboard" : "/"); // Redirect based on role
+
+  //   } catch (error) {
+  //     toast.error("Login failed");
+  //     console.error("Login error:", error);
+  //   } finally {
+  //     setBtnLoading(false);
+  //   }
+  // };
   const login = (name, token, role, email) => {
     setBtnLoading(true);
     try {
-      const tokenFromCookies = Cookies.get('token'); // Get token from cookies
+      const tokenFromBackend = token; // Ensure token is coming from backend response
+
       console.log("Logging in:", name, "Role:", role, "Email:", email); // Debugging
 
       const userData = { username: name, role, email };
 
-      // If token exists, store it in localStorage
-      if (!tokenFromCookies) {
-        console.warn("No token found in cookies. Ensure cookies are set properly.");
-        // toast.error("No token received from server");
-      }
+      // Set the token in cookies on successful login
+      Cookies.set('token', tokenFromBackend, { expires: 7, secure: true, sameSite: 'None' });
 
       localStorage.setItem("loggedInUser", JSON.stringify({ user: userData }));
       setUser(userData);
@@ -36,7 +62,6 @@ export const AuthProvider = ({ children }) => {
       toast.success("Logged in successfully");
 
       navigate(role === "admin" ? "/adminDashboard" : "/"); // Redirect based on role
-
     } catch (error) {
       toast.error("Login failed");
       console.error("Login error:", error);
@@ -44,6 +69,8 @@ export const AuthProvider = ({ children }) => {
       setBtnLoading(false);
     }
   };
+
+
 
   const fetchUser = () => {
     const storedUser = localStorage.getItem("loggedInUser");
@@ -68,7 +95,7 @@ export const AuthProvider = ({ children }) => {
       console.error("Error parsing user from localStorage:", error);
       setUser(null);
       setIsAuth(false);
-      localStorage.removeItem("loggedInUser"); 
+      localStorage.removeItem("loggedInUser");
     }
 
     setLoading(false);
@@ -77,7 +104,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("loggedInUser");
-    Cookies.remove('token'); 
+    Cookies.remove('token');
     setUser(null);
     setIsAuth(false);
     navigate("/login");

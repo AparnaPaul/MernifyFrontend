@@ -15,7 +15,7 @@ export const CartProvider = ({children}) => {
     async function fetchCart(){
         try{
             const {data} = await axios.get(`https://mernifyserver.onrender.com/api/cart/all`, {
-               withCredentials:true,
+                withCredentials: true
             });
             setCart(data.cart)
             setTotalItem(data.sumOfQuantities);
@@ -27,7 +27,7 @@ export const CartProvider = ({children}) => {
  async function addToCart(product) {
     try {
         const {data} = await axios.post(`https://mernifyserver.onrender.com/api/cart/add`, {product}, {
-            withCredentials:true,
+            withCredentials: true
         })
 
         toast.success(data.message)
